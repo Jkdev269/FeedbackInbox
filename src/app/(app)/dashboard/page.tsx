@@ -9,7 +9,7 @@ import { AcceptMessageSchema } from "@/schemas/acceptMessageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios, { AxiosError } from "axios";
-import { Loader2, RefreshCcw } from "lucide-react";
+import { Clipboard, Loader2, MessageSquare, RefreshCcw } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -34,9 +34,9 @@ const Page = () => {
   const acceptMessages = watch("acceptMessages");
 
   const handleDeleteMessage = (messageId: string) => {
-    setMessages(messages.filter((message) => message._id !== messageId));
+    setMessages((prevMessages) => prevMessages.filter((message) => message._id !== messageId));
   };
-
+  
   const fetchAcceptMessage = useCallback(async () => {
     SetIsSwitchLoading(true);
     try {
@@ -109,8 +109,11 @@ const Page = () => {
 
   if (!session || !session.user) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div>Please login</div>
+      <div className="flex justify-center items-center h-screen bg-gray-50">
+        <div className="p-8 bg-white rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">Access Required</h2>
+          <p className="text-gray-600">Please login to view your dashboard</p>
+        </div>
       </div>
     );
   }
@@ -126,65 +129,128 @@ const Page = () => {
   };
 
   return (
-    <>
-      <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
-        <h1 className="text-4xl font-bold mb-4">User Dashboard</h1>
-
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Copy Your Unique Link</h2>
-          <div className="flex items-center">
-            <input
-              type="text"
-              value={profileUrl}
-              disabled
-              className="input input-bordered w-full p-2 mr-2"
-            />
-            <Button onClick={copyToClipboard}>Copy</Button>
+    <div className="bg-gray-50 min-h-screen pb-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          {/* Dashboard Header */}
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-8">
+            <h1 className="text-3xl font-bold text-white">Welcome to Your Dashboard</h1>
+            <p className="text-blue-100 mt-2">Manage your messages and profile settings</p>
+          </div>
+          
+          <div className="p-6">
+            {/* Profile URL Section */}
+            <div className="mb-8">
+              <div className="flex items-center mb-4">
+                <Clipboard className="h-5 w-5 text-gray-500 mr-2" />
+                <h2 className="text-xl font-semibold text-gray-800">Your Profile Link</h2>
+              </div>
+              <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                <input
+                  type="text"
+                  value={profileUrl}
+                  disabled
+                  className="flex-grow p-3 bg-transparent text-gray-700 focus:outline-none"
+                />
+                <Button 
+                  onClick={copyToClipboard} 
+                  className="bg-blue-500 hover:bg-blue-600 text-white m-1"
+                >
+                  Copy Link
+                </Button>
+              </div>
+              <p className="text-sm text-gray-500 mt-2">Share this link with others to receive messages</p>
+            </div>
+            
+            <Separator className="my-6" />
+            
+            {/* Message Settings Section */}
+            <div className="mb-8">
+              <div className="flex items-center mb-4">
+                <MessageSquare className="h-5 w-5 text-gray-500 mr-2" />
+                <h2 className="text-xl font-semibold text-gray-800">Message Settings</h2>
+              </div>
+              
+              <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+                <Switch
+                  {...register("acceptMessages")}
+                  checked={acceptMessages}
+                  onCheckedChange={handleSwitchChange}
+                  disabled={isSwitchLoading}
+                  className="data-[state=checked]:bg-blue-500"
+                />
+                <span className="ml-3 font-medium text-gray-700">
+                  Accept Messages: {acceptMessages ? 
+                    <span className="text-green-600 font-semibold">On</span> : 
+                    <span className="text-red-500 font-semibold">Off</span>}
+                </span>
+                {isSwitchLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin text-gray-500" />}
+              </div>
+              <p className="text-sm text-gray-500 mt-2">
+                {acceptMessages 
+                  ? "You're currently accepting new messages from other users." 
+                  : "You're not accepting new messages at this time."}
+              </p>
+            </div>
+            
+            <Separator className="my-6" />
+            
+            {/* Messages Section */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <MessageSquare className="h-5 w-5 text-gray-500 mr-2" />
+                  <h2 className="text-xl font-semibold text-gray-800">Your Messages</h2>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    fetchMessages(true);
+                  }}
+                  className="flex items-center space-x-2"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCcw className="h-4 w-4" />
+                  )}
+                  <span>Refresh</span>
+                </Button>
+              </div>
+              
+              {isLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {messages.length > 0 ? (
+                    messages.map((message) => (
+                      <MessageCard
+                        key={message._id as string}
+                        message={message}
+                        onMessageDelete={handleDeleteMessage}
+                      />
+                    ))
+                  ) : (
+                    <div className="col-span-2 bg-gray-50 rounded-lg p-8 text-center">
+                      <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                      <p className="text-gray-500 font-medium">No messages to display</p>
+                      <p className="text-gray-400 text-sm mt-2">
+                        {acceptMessages 
+                          ? "Share your profile link to start receiving messages." 
+                          : "Turn on 'Accept Messages' to allow others to contact you."}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-
-        <div className="mb-4">
-          <Switch
-            {...register("acceptMessages")}
-            checked={acceptMessages}
-            onCheckedChange={handleSwitchChange}
-            disabled={isSwitchLoading}
-          />
-          <span className="ml-2">
-            Accept Messages: {acceptMessages ? "On" : "Off"}
-          </span>
-        </div>
-        <Separator />
-
-        <Button
-          className="mt-4"
-          variant="outline"
-          onClick={(e) => {
-            e.preventDefault();
-            fetchMessages(true);
-          }}
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCcw className="h-4 w-4" />
-          )}
-        </Button>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {messages.length > 0 ? (
-            messages.map((message) => (
-              <MessageCard
-                key={message._id as string}
-                message={message}
-                onMessageDelete={handleDeleteMessage}
-              />
-            ))
-          ) : (
-            <p>No messages to display.</p>
-          )}
-        </div>
       </div>
-    </>
+    </div>
   );
 };
 
