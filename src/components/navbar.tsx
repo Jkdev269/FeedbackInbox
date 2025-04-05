@@ -38,10 +38,10 @@ function Navbar() {
                     <div className="hidden md:flex items-center space-x-4">
                         {session ? (
                             <>
-                                <span className="mr-4">Welcome, {user.username || user.email}</span>
-                                <Link href="/dashboard">
+                                {/* <span className="mr-4">Welcome, {user.username || user.email}</span> */}
+                                <Link href="/">
                                     <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                                        Dashboard
+                                        Home
                                     </Button>
                                 </Link>
                                 <Button 
@@ -66,9 +66,9 @@ function Navbar() {
                     {session ? (
                         <div className="flex flex-col space-y-3">
                             <span className="py-2 text-center">Welcome, {user.username || user.email}</span>
-                            <Link href="/dashboard" className="w-full">
+                            <Link href="/" className="w-full">
                                 <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
-                                    Dashboard
+                                    Home
                                 </Button>
                             </Link>
                             <Button 

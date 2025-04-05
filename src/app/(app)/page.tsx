@@ -10,11 +10,15 @@ import {
 import Autoplay from "embla-carousel-autoplay"
 import { useRef } from "react"
 import messages from "@/messages.json"
+import { useSession } from "next-auth/react"
+import { User } from "next-auth"
 
 const Page = () => {
   const autoplayRef = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: false })
   )
+  const { data: session } = useSession()
+  const user = session?.user as User
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -27,16 +31,37 @@ const Page = () => {
           <p className="mt-4 md:mt-6 text-base sm:text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
             Explore Mystery Message - Where your identity remains a secret and your thoughts roam free
           </p>
-          <div className="mt-8 md:mt-10">
+          {/* <div className="mt-8 md:mt-10">
             <button className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-full font-medium shadow-lg transition-all duration-300 mr-4 transform hover:scale-105">
               Get Started
             </button>
             <button className="px-6 py-3 bg-transparent border border-purple-400 hover:bg-purple-900/20 rounded-full font-medium transition-all duration-300 transform hover:scale-105">
               Learn More
             </button>
-          </div>
+          </div> */}
         </section>
-
+        {session?(
+          <div className="bg-purple-600/50 p-6 rounded-xl border border-purple-500/30 mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Welcome back, {user.username || user.email}!</h2>
+            <p className="text-slate-300 mb-6">Continue your journey and explore new conversations.</p>
+            <a href="/dashboard">
+              <button className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full font-medium shadow-lg transition-all duration-300 transform hover:scale-105">
+                Go to Dashboard
+              </button>
+            </a>
+          </div>
+        ):( <section className="w-full max-w-4xl bg-gradient-to-r from-purple-900/50 to-pink-900/50 p-8 rounded-2xl border border-purple-500/30 mb-16 backdrop-blur-sm">
+          <div className="text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to join the conversation?</h2>
+            <p className="text-slate-300 mb-6 max-w-2xl mx-auto">Sign up today and experience a new way of connecting with people around the world.</p>
+           <a href="/sign-up">
+           <button className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full font-medium shadow-lg transition-all duration-300 transform hover:scale-105">
+              Create Your Account
+            </button>
+           </a>
+           
+          </div>
+        </section>)}
         {/* Featured Messages Carousel */}
         <div className="w-full max-w-4xl mb-16">
           <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-center">
@@ -108,15 +133,8 @@ const Page = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="w-full max-w-4xl bg-gradient-to-r from-purple-900/50 to-pink-900/50 p-8 rounded-2xl border border-purple-500/30 mb-16 backdrop-blur-sm">
-          <div className="text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to join the conversation?</h2>
-            <p className="text-slate-300 mb-6 max-w-2xl mx-auto">Sign up today and experience a new way of connecting with people around the world.</p>
-            <button className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full font-medium shadow-lg transition-all duration-300 transform hover:scale-105">
-              Create Your Account
-            </button>
-          </div>
-        </section>
+        
+       
       </main>
       
       
