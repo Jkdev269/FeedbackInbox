@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     return Response.json(
-      { success: false, message: "Failed to send message" },
+      { success: false, message: "Failed to send message",error },
       { status: 500 }
     );
   }

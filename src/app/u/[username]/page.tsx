@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { Loader2, Send, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { CardHeader, CardContent, Card } from '@/components/ui/card';
+import { CardContent, Card } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -57,11 +57,11 @@ export default function SendMessage() {
         username,
       });
 
-      toast.success(response.data.message)
+      toast.success(response.data.message);
       form.reset({ ...form.getValues(), content: '' });
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      toast.error(axiosError.response?.data.message ?? 'Failed to sent message')
+      toast.error(axiosError.response?.data.message ?? 'Failed to send message');
     } finally {
       setIsLoading(false);
     }
@@ -93,7 +93,7 @@ export default function SendMessage() {
               Send a Message
             </h1>
             <p className="text-white/80 text-center mt-2">
-              To @{username}'s anonymous message board
+              To @{username}&apos;s anonymous message board
             </p>
           </div>
           
@@ -144,7 +144,7 @@ export default function SendMessage() {
 
             <div className="mt-10">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">Need Inspiration?</h2>
+                <h2 className="text-xl font-semibold text-gray-800">Need Inspiration&#63;</h2>
                 <Button
                   onClick={fetchSuggestedMessages}
                   className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
@@ -170,7 +170,7 @@ export default function SendMessage() {
                     <div className="flex flex-col items-center justify-center py-8 text-center">
                       <Sparkles className="h-12 w-12 text-indigo-300 mb-3" />
                       <p className="text-gray-500">
-                        Click "Get Suggestions" for message ideas
+                        Click &quot;Get Suggestions&quot; for message ideas
                       </p>
                     </div>
                   ) : (
@@ -196,7 +196,7 @@ export default function SendMessage() {
           
           <div className="p-6 bg-indigo-50 text-center">
             <p className="font-medium text-indigo-800 mb-3">
-              Want your own anonymous message board?
+              Want your own anonymous message board&#63;
             </p>
             <Link href={'/sign-up'}>
               <Button className="bg-indigo-600 hover:bg-indigo-700">

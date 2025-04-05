@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+
 import { transporter } from "@/lib/nodemailer";
 import { ApiResponse } from "@/types/ApiResponse";
 

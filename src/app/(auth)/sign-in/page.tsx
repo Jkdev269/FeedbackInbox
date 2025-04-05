@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -22,7 +21,8 @@ import { Button } from "@/components/ui/button";
 import { SignInSchema } from "@/schemas/signInSchema";
 import { signIn } from "next-auth/react";
 
-function page() {
+// Changed function name from 'page' to 'Page' to follow React component naming convention
+function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter();
@@ -53,8 +53,9 @@ function page() {
       if (result?.url) {
         router.replace("/dashboard");
       }
-    } catch (error) {
-      toast.error("An error occurred during sign in");
+    } catch (err) {
+      // Changed variable name from 'error' to 'err' to avoid unused variable warning
+      toast.error(`An error occurred during sign in: ${err instanceof Error ? err.message : "Unknown error"}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -115,7 +116,7 @@ function page() {
           </Form>
           <div className="text-center mt-4">
             <p>
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/sign-up"
                 className="text-blue-600 hover:text-blue-800"
@@ -130,4 +131,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -15,7 +14,6 @@ import { Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,9 +22,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-function page() {
+function Page() {
   const [username, setUsername] = useState("");
-  const [usenameMessage, setUsernameMessage] = useState("");
+  const [, setUsernameMessage] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const debounced= useDebounceCallback(setUsername, 500);
@@ -71,7 +69,7 @@ function page() {
     } catch (error) {
       console.error("Error in signup of user", error);
       const axiosError = error as AxiosError<ApiResponse>;
-      let erroMessage = axiosError.response?.data.message;
+      const erroMessage = axiosError.response?.data.message;
       toast.error(erroMessage ?? "Error in signup of user");
     } finally {
       setIsSubmitting(false);
@@ -173,4 +171,4 @@ function page() {
   );
 }
 
-export default page;
+export default Page;

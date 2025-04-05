@@ -3,11 +3,13 @@ import { authOptions } from "../../auth/[...nextauth]/options";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import { User } from "next-auth";
-import mongoose from "mongoose";  // Add this import for ObjectId validation
+import mongoose from "mongoose";
+import { NextRequest } from "next/server";
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { messageid: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{  messageid: string; }> },
+  // context: { params: RouteSegment }
 ) {
   await dbConnect();
 
@@ -21,7 +23,7 @@ export async function DELETE(
     );
   }
 
-  const messageId = params.messageid;
+  const messageId = (await params).messageid;
   console.log("Attempting to delete message with ID:", messageId);
 
   try {

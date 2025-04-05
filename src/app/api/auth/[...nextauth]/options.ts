@@ -3,16 +3,22 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
+
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       id: "credentials",
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        identifier: { label: "Email or Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: any): Promise<any> {
+      async authorize(credentials) {
+        if (!credentials?.identifier || !credentials.password) {
+          return null;
+        }
+        
         await dbConnect();
         try {
           const user = await UserModel.findOne({
@@ -21,23 +27,37 @@ export const authOptions: NextAuthOptions = {
               { username: credentials.identifier }
             ]
           });
+          
           if (!user) {
-            throw new Error("No user found with this email");
+            throw new Error("No user found with this email or username");
           }
+          
           if (!user.isVerified) {
             throw new Error("Please verify your email first");
           }
+          
           const isPasswordCorrect = await bcrypt.compare(
             credentials.password,
             user.password
           );
+          
           if (isPasswordCorrect) {
-            return user;
+            // Return only what NextAuth expects
+            return {
+              id: user._id as string,
+              email: user.email,
+              name: user.username,
+              // Add custom properties we'll use in the JWT
+              _id: user._id as string,
+              isVerified: user.isVerified,
+              isAcceptingMessages: user.isAcceptingMessages,
+              username: user.username
+            };
           } else {
             throw new Error("Password is incorrect");
           }
-        } catch (err: any) {
-          throw new Error(err);
+        } catch (err) {
+          throw new Error(err instanceof Error ? err.message : "Authentication error");
         }
       },
     }),
@@ -51,7 +71,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token._id = user._id?.toString();
+        token._id = user._id;
         token.isVerified = user.isVerified;
         token.isAcceptingMessages = user.isAcceptingMessages;
         token.username = user.username;
@@ -59,7 +79,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (token) {
+      if (token && session.user) {
         session.user._id = token._id;
         session.user.isVerified = token.isVerified;
         session.user.isAcceptingMessages = token.isAcceptingMessages;

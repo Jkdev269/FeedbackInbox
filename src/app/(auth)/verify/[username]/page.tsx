@@ -10,7 +10,6 @@ import { ApiResponse } from "@/types/ApiResponse";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -40,7 +39,7 @@ function VerifyAccount() {
         } catch (error) {
              console.error("Error in signup of user", error);
                   const axiosError = error as AxiosError<ApiResponse>;
-                  let erroMessage = axiosError.response?.data.message;
+                  const erroMessage = axiosError.response?.data.message;
                   toast.error(erroMessage ?? "Error in signup of user");
         }
       }

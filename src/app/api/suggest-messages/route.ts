@@ -1,4 +1,4 @@
-export async function POST(req: Request) {
+export async function POST() {
     try {
       // Define a list of open-ended questions
       const predefinedQuestions = [
